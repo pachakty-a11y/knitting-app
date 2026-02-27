@@ -1,48 +1,145 @@
-        body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-            background-color: #fdf5e6; /* 温かみのあるベージュ */
-            color: #5d4037; /* 濃いブラウン */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+/* ==========================================
+   1. 全体設定
+   ========================================== */
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    background-color: #f0f8ff; /* 北欧風の薄い水色 */
+    color: #2c3e50;            /* 濃いネイビー */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #7fbfff;
+}
 
-        button {
-            background-color: #ffb6c1; /* ライトピンク */
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 5px;
-            transition: 0.3s;
-        }
+/* ==========================================
+   2. カードレイアウト
+   ========================================== */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-sizing: border-box; /* パディングを含めた幅計算 */
+}
 
-        button:hover {
-            background-color: #ff8c94; /* 濃いピンク */
-        }
+/* ==========================================
+   3. 入力フォーム
+   ========================================== */
+input[type="text"] {
+    border: 2px solid #e0f0ff;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
 
-        input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 70%;
-        }
+input[type="text"]:focus {
+    border-color: #7fbfff;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(127, 191, 255, 0.2);
+}
 
-        ul {
-            text-align: left;
-            list-style-type: "🧶 "; /* リストの点を毛糸玉に！ */
-        }
+/* ==========================================
+   4. ボタン
+   ========================================== */
+button {
+    background-color: #7fbfff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: #5da9f0; /* 少し濃い水色 */
+    transform: translateY(-1px); /* 少し浮く演出 */
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ==========================================
+   5. 現在のプロジェクト表示エリア
+   ========================================== */
+#currentProject {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #e0f0ff;
+    text-align: left;
+}
+
+#currentProject h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+}
+
+#currentProject p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #7f8c8d;
+}
+
+/* ==========================================
+   6. 履歴リスト（ログ）
+   ========================================== */
+#yarnList {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+    text-align: left;
+}
+
+#yarnList li {
+    background-color: #ffffff;
+    border-left: 5px solid #7fbfff;
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+    color: #455a64;
+    animation: fadeIn 0.3s ease-in; /* 追加時のふわっと演出 */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.delete-btn {
+    background-color: #eee;
+    color: #999;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0;
+}
+
+.delete-btn:hover {
+    background-color: #ff8c94; /* 削除時は赤っぽく */
+    color: white;
+}
