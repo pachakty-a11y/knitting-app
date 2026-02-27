@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>編み物管理ツール</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>編み物管理ツール</h1>
+
+    <div class="card">
+        <form onsubmit="updateYarn(); return false;">
+            <input type="text" id="yarnInput" placeholder="毛糸の名前を入力">
+            <button type="submit">登録</button>
+        </form>
+        <h3>使用中： <span id="yarnName">---</span></h3>
+    </div>
+
+    <div class="card">
+        <p>現在の段数</p>
+        <div style="font-size: 48px; font-weight: bold;" id="counter">0</div>
+        <p>段目</p>
+        <button onclick="countUp()" style="font-size: 1.2em; padding: 15px 30px;">+1段編んだ！</button>
+        <br>
+        <button onclick="reset()" style="background-color: #ccc;">リセット</button>
+    </div>
+
+    <div class="card">
+        <h3>毛糸の在庫リスト</h3>
+        <ul id="yarnList"></ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
