@@ -1,23 +1,23 @@
 // 画面切り替え用の関数
 function showView(viewName) {
-    const list = document.getElementById('listView');
-    const counter = document.getElementById('counterView');
+    // すべての画面を一度取得する
+    const listView = document.getElementById('listView');
+    const createView = document.getElementById('createView');
+    const counterView = document.getElementById('counterView');
 
+    // いったん全部隠す
+    listView.style.display = 'none';
+    createView.style.display = 'none';
+    counterView.style.display = 'none';
+
+    // 指定された画面だけを表示する
     if (viewName === 'list') {
-        list.style.display = 'block';
-        counter.style.display = 'none';
+        listView.style.display = 'block';
         renderProjectList();
-    } else {
-        list.style.display = 'none';
-        counter.style.display = 'block';
-    }
-    const listBtn = document.getElementById('nav-list-btn');
-    if (listBtn) {
-        if (viewName === 'list') {
-            listBtn.classList.add('active');
-        } else {
-            listBtn.classList.remove('active');
-        }
+    } else if (viewName === 'create') {
+        createView.style.display = 'block';
+    } else if (viewName === 'counter') {
+        counterView.style.display = 'block';
     }
 }
 

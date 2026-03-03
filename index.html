@@ -12,25 +12,22 @@
 </head>
 
 <body>
+    <h1>編み物管理ツール</h1>
     <div style="text-align: center; margin-bottom: 20px;">
         <nav>
             <button id="nav-list-btn" onclick="showView('list')">プロジェクト一覧</button>
         </nav>
     </div>
 
-    <div id="listView" class="view-section" style="display: none;">
+    <div id="listView" class="view-section">
         <div class="card">
-            <h3>プロジェクト一覧</h3>
             <div id="projectList">
             </div>
             <button onclick="showView('create')">+ 新しく編み始める</button>
         </div>
     </div>
-
-    <div id="counterView" class="view-section">
-
-        <h1>編み物管理ツール</h1>
-
+    
+    <div id="createView" class="view-section" style="display: none;">
         <div class="card">
             <form onsubmit="updateProject(); return false;">
                 <input type="text" id="processInput" placeholder="工程（例：前身ごろ ゴム編み）">
@@ -40,7 +37,11 @@
                 <br>
                 <button type="submit">この工程を開始する</button>
             </form>
+        </div>
+    </div>
 
+    <div id="counterView" class="view-section" style="display: none;">
+        <div class="card">
             <div id="currentProject">
                 <h3>進行中：<span id="displayProcess">---</span></h3>
                 <p>毛糸：<span id="displayYarn">---</span> | 針：<span id="displayNeedle">---</span></p>
