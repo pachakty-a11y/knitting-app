@@ -1,15 +1,48 @@
+// 画面切り替え用の関数
+function showView(viewName) {
+    const list = document.getElementById('listView');
+    const counter = document.getElementById('counterView');
+
+    if (viewName === 'list') {
+        list.style.display = 'block';
+        counter.style.display = 'none';
+        renderProjectList();
+    } else {
+        list.style.display = 'none';
+        counter.style.display = 'block';
+    }
+    const listBtn = document.getElementById('nav-list-btn');
+    if (listBtn) {
+        if (viewName === 'list') {
+            listBtn.classList.add('active');
+        } else {
+            listBtn.classList.remove('active');
+        }
+    }
+}
+
 // ==========================================
 // 1. データの準備と初期化
 // ==========================================
-let count = Number(localStorage.getItem('knittingCount')) || 0;
-let yarns = JSON.parse(localStorage.getItem('yarnList')) || [];
-const counterText = document.getElementById('counter');
+// プロジェクト全データの配列（LocalStorageから読み込む）
+let projects = JSON.parse(localStorage.getItem('knittingProjects')) || [];
 
-// ページを開いた時の読み込み処理
+// 「今どのプロジェクトを選択しているか」のインデックス（-1は未選択）
+let currentProjectIndex = localStorage.getItem('currentProjectIndex') !== null 
+    ? Number(localStorage.getItem('currentProjectIndex')) 
+    : -1;
+
+// 今までの変数は、選択中のプロジェクトから中身を取り出すようにします
+let count = 0; 
+
+// 初期起動時に、選択中のプロジェクトがあればデータをセットする
 window.onload = function() {
-    renderList();
-    loadCurrentProject();
-    updateApp();
+    if (currentProjectIndex !== -1 && projects[currentProjectIndex]) {
+        loadProject(currentProjectIndex);
+    } else {
+        showView('list'); // 何も選んでなければ一覧を出す
+    }
+    renderList(); // 履歴の描画
 };
 
 // ==========================================
@@ -17,7 +50,10 @@ window.onload = function() {
 // ==========================================
 function updateApp() {
     const goal = Number(document.getElementById('displayGoal').innerText);
-    counterText.innerText = count;
+    // ↓ ここ！ counterText を document.getElementById('counter') に置き換える
+    const counterElement = document.getElementById('counter');
+    
+    counterElement.innerText = count;
     localStorage.setItem('knittingCount', count);
 
     // あと何段かの計算
@@ -26,18 +62,23 @@ function updateApp() {
 
     // 目標達成時の演出
     if (goal > 0 && count >= goal) {
-        counterText.style.color = "#7fbfff";
+        counterElement.style.color = "#7fbfff"; // 色を変える対象も変更
         if (count === goal) {
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
             alert("目標達成です！お疲れ様でした🧶");
         }
     } else {
-        counterText.style.color = "#2c3e50";
+        counterElement.style.color = "#2c3e50";
     }
 }
 
 function countUp() {
+    if (currentProjectIndex === -1) return;
+    
     count++;
+    projects[currentProjectIndex].count = count;
+    saveAll(); // 保存！
+    
     if (navigator.vibrate) navigator.vibrate(50);
     updateApp();
 }
@@ -45,6 +86,8 @@ function countUp() {
 function countDown() {
     if (count > 0) {
         count--;
+        projects[currentProjectIndex].count = count;
+        saveAll();
         updateApp();
     }
 }
@@ -53,27 +96,125 @@ function countDown() {
 // 3. 工程管理と履歴
 // ==========================================
 function updateProject() {
-    const process = document.getElementById('processInput').value || "---";
+    const process = document.getElementById('processInput').value || "新しい工程";
     const yarn = document.getElementById('yarnInput').value || "---";
     const needle = document.getElementById('needleInput').value || "---";
-    const goalValue = document.getElementById('goalInput').value || "0";
-    const goal = parseInt(goalValue.replace(/[^0-9]/g, '')) || 0;
+    const goal = parseInt(document.getElementById('goalInput').value.replace(/[^0-9]/g, '')) || 0;
 
-    setProjectDisplay(process, yarn, needle, goal);
-    saveProjectToStorage(process, yarn, needle, goal);
+    // 新しいプロジェクトオブジェクトを作成
+    const newProject = {
+        process: process,
+        yarn: yarn,
+        needle: needle,
+        goal: goal,
+        count: 0
+    };
 
-    count = 0;
-    updateApp();
+    // 配列の先頭に追加
+    projects.unshift(newProject);
+    
+    // 保存して、今追加したものを「現在操作中」にする
+    currentProjectIndex = 0;
+    saveAll();
+    
+    // 表示を更新してカウンター画面へ
+    loadProject(0);
+    showView('counter');
     clearInputs();
 }
 
+// script.js 内
+function renderProjectList() {
+    const listDiv = document.getElementById('projectList');
+    listDiv.innerHTML = "";
+
+    projects.forEach((proj, index) => {
+        const item = document.createElement('div');
+        item.className = "project-card";
+        
+        // カード全体をクリックした時の処理
+        item.innerHTML = `
+            <div onclick="selectAndOpenProject(${index})" style="flex-grow:1;">
+                <strong>${proj.process}</strong><br>
+                <small>${proj.count} / ${proj.goal}段 (${proj.yarn})</small>
+            </div>
+            <button class="delete-btn" onclick="deleteProject(${index}, event)">✕</button>
+        `;
+        listDiv.appendChild(item);
+    });
+}
+
+// 選択と画面移動をセットで行う新しい関数
+function selectAndOpenProject(index) {
+    loadProject(index);    // データの読み込み
+    showView('counter');   // 管理画面へ切り替え
+}
+
+// 選択したプロジェクトのデータを画面に反映させる
+function loadProject(index) {
+    currentProjectIndex = index;
+    const p = projects[index];
+    
+    count = p.count;
+    document.getElementById('displayProcess').innerText = p.process;
+    document.getElementById('displayYarn').innerText = p.yarn;
+    document.getElementById('displayNeedle').innerText = p.needle;
+    document.getElementById('displayGoal').innerText = p.goal;
+    
+    updateApp(); // 画面上の数字（あと◯段など）を更新
+}
+
+// すべてのデータをまとめて保存する関数
+function saveAll() {
+    localStorage.setItem('knittingProjects', JSON.stringify(projects));
+    localStorage.setItem('currentProjectIndex', currentProjectIndex);
+}
+
 function finishProject() {
+    if (currentProjectIndex === -1) {
+        alert("プロジェクトが選択されていません");
+        return;
+    }
+
     if (confirm("この工程を完了として履歴に保存しますか？")) {
+        // 1. 履歴に保存（今の内容をログに送る）
         saveToHistory();
-        setProjectDisplay("---", "---", "---", 0);
-        clearProjectStorage();
+
+        // 2. メインの配列から今のプロジェクトを削除
+        projects.splice(currentProjectIndex, 1);
+
+        // 3. 選択状態をリセット
+        currentProjectIndex = -1;
         count = 0;
+
+        // 4. 保存と表示の更新
+        saveAll();
         updateApp();
+        renderProjectList(); // リストを再描画
+        
+        // 5. 完了したら一覧画面に戻る（任意ですが、このほうが自然です）
+        showView('list');
+        
+        alert("お疲れ様でした！プロジェクトを完了しました。");
+    }
+}
+
+function deleteProject(index, event) {
+    // カード自体のクリックイベント（選択処理）が動かないように止める
+    event.stopPropagation(); 
+
+    if (confirm("このプロジェクトを削除しますか？")) {
+        projects.splice(index, 1); // 配列から削除
+        
+        // もし今編んでいるものを消したなら、選択状態を解除
+        if (currentProjectIndex === index) {
+            currentProjectIndex = -1;
+        } else if (currentProjectIndex > index) {
+            currentProjectIndex--; // インデックスのズレを補正
+        }
+        
+        saveAll();
+        renderProjectList();
     }
 }
 

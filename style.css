@@ -33,6 +33,37 @@ h1 {
     box-sizing: border-box; /* パディングを含めた幅計算 */
 }
 
+/* プロジェクト一覧の各カード */
+.project-card {
+    background: #fff;
+    border-left: 5px solid #7fbfff; /* 左側にアクセントカラー */
+    margin-bottom: 12px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.1s;
+}
+
+/* タップした時に少し沈む演出（スマホで気持ちいい） */
+.project-card:active {
+    transform: scale(0.98);
+    background: #f9f9f9;
+}
+
+/* 削除ボタンを少し控えめに、でも押しやすく */
+.delete-btn {
+    background: #eee;
+    color: #999;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
 /* ==========================================
    3. 入力フォーム
    ========================================== */
@@ -77,6 +108,22 @@ button:hover {
 
 button:active {
     transform: translateY(0);
+}
+
+/* ナビゲーションボタンの基本スタイル */
+nav button {
+    background: #5a728d;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+/* 選択されている方のボタンを水色にする */
+nav button.active {
+    background: #7fbfff;
+    color: white;
 }
 
 /* ==========================================
