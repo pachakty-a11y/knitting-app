@@ -1,3 +1,34 @@
+// ==========================================
+// 1. データの準備と初期化
+// ==========================================
+// プロジェクト全データの配列（LocalStorageから読み込む）
+let projects = JSON.parse(localStorage.getItem('knittingProjects')) || [];
+
+// 「今どのプロジェクトを選択しているか」のインデックス（-1は未選択）
+let currentProjectIndex = localStorage.getItem('currentProjectIndex') !== null 
+    ? Number(localStorage.getItem('currentProjectIndex')) 
+    : -1;
+
+// 今までの変数は、選択中のプロジェクトから中身を取り出すようにします
+let count = 0; 
+
+// 初期起動時に、選択中のプロジェクトがあればデータをセットする
+window.onload = function() {
+    // 1. データを読み込む
+    const savedProjects = localStorage.getItem('knittingProjects');
+    projects = savedProjects ? JSON.parse(savedProjects) : [];
+    
+    // インデックスも読み込むが、今回は「一覧」を優先するので判定には使わない
+    const savedIndex = localStorage.getItem('currentProjectIndex');
+    currentProjectIndex = savedIndex !== null ? parseInt(savedIndex) : -1;
+
+    // 2. 強制的に「一覧」を表示する
+    // setTimeoutを使うことで、ブラウザがHTMLを描画し終えるのを「一瞬待って」から実行
+    setTimeout(() => {
+        showView('list'); 
+    }, 10); 
+};
+
 // 画面切り替え用の関数
 function showView(viewName) {
     // すべての画面を一度取得する
@@ -20,30 +51,6 @@ function showView(viewName) {
         counterView.style.display = 'block';
     }
 }
-
-// ==========================================
-// 1. データの準備と初期化
-// ==========================================
-// プロジェクト全データの配列（LocalStorageから読み込む）
-let projects = JSON.parse(localStorage.getItem('knittingProjects')) || [];
-
-// 「今どのプロジェクトを選択しているか」のインデックス（-1は未選択）
-let currentProjectIndex = localStorage.getItem('currentProjectIndex') !== null 
-    ? Number(localStorage.getItem('currentProjectIndex')) 
-    : -1;
-
-// 今までの変数は、選択中のプロジェクトから中身を取り出すようにします
-let count = 0; 
-
-// 初期起動時に、選択中のプロジェクトがあればデータをセットする
-window.onload = function() {
-    if (currentProjectIndex !== -1 && projects[currentProjectIndex]) {
-        loadProject(currentProjectIndex);
-    } else {
-        showView('list'); // 何も選んでなければ一覧を出す
-    }
-    renderList(); // 履歴の描画
-};
 
 // ==========================================
 // 2. メイン機能（カウンター）
