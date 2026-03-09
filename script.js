@@ -45,6 +45,7 @@ function showView(viewName) {
     if (viewName === 'list') {
         listView.style.display = 'block';
         renderProjectList();
+        renderList();
     } else if (viewName === 'create') {
         createView.style.display = 'block';
     } else if (viewName === 'counter') {
@@ -226,24 +227,42 @@ function deleteProject(index, event) {
 }
 
 function saveToHistory() {
+    // 1. 今のプロジェクト情報を取得（表示されている文字から取る）
     const process = document.getElementById('displayProcess').innerText;
-    if (process === "---") return;
+    if (process === "---" || process === "") return;
 
+    // 2. 日時を作成
     const now = new Date();
     const dateString = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
     const historyText = `[${dateString}] ${process} (${count}段完了)`;
+
+    // 3. ローカルストレージから「現在の履歴リスト」を読み込む
+    let currentLogs = JSON.parse(localStorage.getItem('yarnLog')) || [];
     
-    yarns.unshift(historyText);
-    localStorage.setItem('yarnList', JSON.stringify(yarns));
+    // 4. 新しい履歴を先頭に追加
+    currentLogs.unshift(historyText);
+    
+    // 5. 「yarnLog」という名前で保存し直す
+    localStorage.setItem('yarnLog', JSON.stringify(currentLogs));
+    
+    // 6. 画面を更新
     renderList();
 }
 
 function renderList() {
-    const listElement = document.getElementById('yarnList');
-    listElement.innerHTML = "";
-    yarns.forEach((item, index) => {
+    const listElement = document.getElementById('yarnList'); // HTMLのULタグのID
+    if (!listElement) return;
+
+    // 保存先を 'yarnLog' に統一して読み込む
+    const logs = JSON.parse(localStorage.getItem('yarnLog')) || [];
+    
+    listElement.innerHTML = '';
+    logs.forEach(logText => {
         const li = document.createElement('li');
-        li.innerHTML = `<span>${item}</span><button class="delete-btn" onclick="deleteYarn(${index})">✕</button>`;
+        li.innerText = logText;
+        // ちょっとオシャレにするならスタイルもJSで当てられます
+        li.style.padding = "5px 0";
+        li.style.borderBottom = "1px solid #eee";
         listElement.appendChild(li);
     });
 }
