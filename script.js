@@ -12,6 +12,8 @@ let currentProjectIndex = localStorage.getItem('currentProjectIndex') !== null
 // 今までの変数は、選択中のプロジェクトから中身を取り出すようにします
 let count = 0; 
 
+let isEditing = false; // 今、編集している最中かどうかを記録する「印」
+
 // 初期起動時に、選択中のプロジェクトがあればデータをセットする
 window.onload = function() {
     // 1. データを読み込む
@@ -51,6 +53,22 @@ function showView(viewName) {
     } else if (viewName === 'counter') {
         counterView.style.display = 'block';
     }
+}
+
+function editCurrentProject() {
+    const p = projects[currentProjectIndex];
+    
+    // 1. 今の値を入力フォームにセットする
+    document.getElementById('processInput').value = p.process;
+    document.getElementById('yarnInput').value = p.yarn;
+    document.getElementById('needleInput').value = p.needle;
+    document.getElementById('goalInput').value = p.goal;
+
+    // 2. 「編集モードだよ！」と印を付ける
+    isEditing = true; 
+    
+    // 3. 入力画面（createView）へ移動
+    showView('create');
 }
 
 // ==========================================
@@ -109,26 +127,35 @@ function updateProject() {
     const needle = document.getElementById('needleInput').value || "---";
     const goal = parseInt(document.getElementById('goalInput').value.replace(/[^0-9]/g, '')) || 0;
 
-    // 新しいプロジェクトオブジェクトを作成
-    const newProject = {
-        process: process,
-        yarn: yarn,
-        needle: needle,
-        goal: goal,
-        count: 0
-    };
+    if (isEditing) {
+        // 【編集モードの場合】
+        // 現在選ばれているプロジェクトの内容だけを上書きする
+        projects[currentProjectIndex] = {
+            ...projects[currentProjectIndex], // 段数(count)などはそのまま維持！
+            process: process,
+            yarn: yarn,
+            needle: needle,
+            goal: goal
+        };
+        isEditing = false; // 編集が終わったのでモードを解除
+    } else {
+        // 【新規登録モードの場合】
+        const newProject = {
+            process: process,
+            yarn: yarn,
+            needle: needle,
+            goal: goal,
+            count: 0
+        };
+        projects.unshift(newProject);
+        currentProjectIndex = 0;
+    }
 
-    // 配列の先頭に追加
-    projects.unshift(newProject);
-    
-    // 保存して、今追加したものを「現在操作中」にする
-    currentProjectIndex = 0;
+    // 共通の処理
     saveAll();
-    
-    // 表示を更新してカウンター画面へ
-    loadProject(0);
+    loadProject(currentProjectIndex);
     showView('counter');
-    clearInputs();
+    clearInputs(); // 入力欄をきれいにする
 }
 
 // script.js 内

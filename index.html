@@ -23,7 +23,7 @@
         <div class="card">
             <div id="projectList">
             </div>
-            <button onclick="showView('create')">+ 新しく編み始める</button>
+            <button onclick="isEditing=false; clearInputs(); showView('create');">+ 新しく編み始める</button>
         </div>
         <div class="card">
             <h3 style="border-bottom: 2px solid #7fbfff; padding-bottom: 5px;">🧶 編み物ログ（履歴）</h3>
@@ -52,6 +52,9 @@
                 <h3>進行中：<span id="displayProcess">---</span></h3>
                 <p>毛糸：<span id="displayYarn">---</span> | 針：<span id="displayNeedle">---</span></p>
                 <p>目標：あと <span id="remainingRows">0</span> 段 / <span id="displayGoal">0</span> 段</p>
+                <button onclick="editCurrentProject()" style="background-color: #5d429b; color: white; margin-top: 10px;">
+                    📝 情報を編集する
+                </button>
             </div>
         </div>
 
